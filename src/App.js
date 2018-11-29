@@ -4,6 +4,9 @@ import './App.css';
 import { observable, computed, action } from 'mobx'
 import Counter from './components/Counter'
 import Temperature from './components/Temperature'
+import { observer } from 'mobx-react';
+import InputBlock from './components/InputBlock'
+import ToDos from './components/ToDos'
 
 const appState = observable({
   count: 0
@@ -14,11 +17,14 @@ appState.increment = function () {
 appState.decrement = function () {
   this.count--;
 }
+const toDos = observable({
+  list: ['do', 'did', 'done']
+})
 
 const t = new class Temperature {
   // Change unit to compute new value from given state.
 
-  @observable unit = "K";
+  @observable unit = "C";
   @observable temperatureCelsius = 25;
 
   @computed get temperatureKelvin() {
@@ -39,24 +45,31 @@ const t = new class Temperature {
       case "C": return this.temperatureCelsius + "ºC"
     }
   }
-  @action("update unit") setUnit(newUnit) {
+  @action
+  setUnit(newUnit) {
     this.unit = newUnit;
   }
 
-  @action("update temperature") setCelsius(degrees) {
+  @action
+  setCelsius(degrees) {
     this.temperatureCelsius = degrees;
   }
 
-  @action("update temperature and unit")
+  @action
   setTemperatureAndUnit(degrees, unit) {
     this.setCelsius(degrees);
     this.setUnit(unit);
+  }
+
+  @action
+  inc() {
+    this.setCelsius(this.temperatureCelsius + 1);
   }
 }
 
 
 
-class App extends Component {
+@observer class App extends Component {
 
   render() {
     return (
@@ -64,6 +77,8 @@ class App extends Component {
         <header className="App-header">
           <Counter store={appState} />
           <Temperature temperature={t} />
+          <InputBlock temperature={t}></InputBlock>
+          <ToDos allToDos={toDos}></ToDos>
         </header>
       </div>
     );

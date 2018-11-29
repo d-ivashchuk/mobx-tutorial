@@ -1,21 +1,31 @@
 
 import React, { Component } from 'react';
+import { action } from 'mobx'
+import { observer } from "mobx-react";
 
-class Temperature extends Component {
+@observer class Temperature extends Component {
 
     render() {
         return (
             <div className="App">
-                <div>{this.props.temperature.temperature}</div>
+                <div onClick={this.onTemperatureClick}>{this.props.temperature.temperature}</div>
                 <div>
-                    <button onClick={() => console.log('K')}>K</button>
-                    <button onClick={() => console.log('F')}>F</button>
-                    <button onClick={() => console.log('C')}>C</button>
+                    <button onClick={() => this.onUnitClick('K')}>K</button>
+                    <button onClick={() => this.onUnitClick('F')}>F</button>
+                    <button onClick={() => this.onUnitClick('C')}>C</button>
                 </div>
 
             </div>
         );
     }
+    @action
+    onTemperatureClick = () => {
+        this.props.temperature.inc();
+    };
+    @action
+    onUnitClick = (unit) => {
+        this.props.temperature.setUnit(unit)
+    };
 }
 
 export default Temperature;
